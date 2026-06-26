@@ -13,7 +13,7 @@ interface FAQItem {
 
 export default function PusatBantuanPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(0); // Index 0 (Apakah bisa diakses dari HP?) is open by default
+  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null); // No FAQ is open by default, same as FAQ.tsx
 
   const faqData: FAQItem[] = [
     {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -16,7 +16,9 @@ import {
   Building2,
   Calendar,
   CreditCard,
-  DollarSign
+  DollarSign,
+  ChevronDown,
+  LayoutGrid
 } from "lucide-react";
 import Link from "next/link";
 
@@ -51,36 +53,43 @@ function CariContent() {
   const [priceRange, setPriceRange] = useState("semua");
   const [duration, setDuration] = useState("semua");
 
+  // Sync selectedType state with searchParams when URL type query changes
+  useEffect(() => {
+    const rawType = searchParams.get("type");
+    const currentType: PropertyType =
+      (rawType === "kost" || rawType === "kontrakan" || rawType === "ruko")
+        ? rawType
+        : "semua";
+    setSelectedType(currentType);
+  }, [searchParams]);
+
   const getBreadcrumbs = () => {
-    switch (selectedType) {
-      case "kost":
-        return [
-          { label: "Home", href: "/" },
-          { label: "Kost Depok", href: "/cari?type=kost" },
-          { label: "Kost Devina", href: "/cari?type=kost" },
-          { label: "Kost Eksklusif Devina 1", active: true }
-        ];
-      case "kontrakan":
-        return [
-          { label: "Home", href: "/" },
-          { label: "Kontrakan Depok", href: "/cari?type=kontrakan" },
-          { label: "Kontrakan Devina", href: "/cari?type=kontrakan" },
-          { label: "Rumah Kontrakan Devina Asri", active: true }
-        ];
-      case "ruko":
-        return [
-          { label: "Home", href: "/" },
-          { label: "Ruko Depok", href: "/cari?type=ruko" },
-          { label: "Ruko Devina", href: "/cari?type=ruko" },
-          { label: "Ruko Bisnis Devina Square", active: true }
-        ];
-      default:
-        return [
-          { label: "Home", href: "/" },
-          { label: "Cari Properti", href: "/cari" },
-          { label: "Semua Properti", active: true }
-        ];
-    }
+    return [
+      {
+        label: "Kost",
+        href: "/cari?type=kost",
+        active: selectedType === "kost",
+        bgClass: selectedType === "kost"
+          ? "bg-blue-600 text-white font-bold border border-blue-600 shadow-sm"
+          : "bg-blue-50 hover:bg-blue-100 text-blue-600/70 border border-blue-100/50"
+      },
+      {
+        label: "Kontrakan",
+        href: "/cari?type=kontrakan",
+        active: selectedType === "kontrakan",
+        bgClass: selectedType === "kontrakan"
+          ? "bg-emerald-600 text-white font-bold border border-emerald-600 shadow-sm"
+          : "bg-emerald-50 hover:bg-emerald-100 text-emerald-600/70 border border-emerald-100/50"
+      },
+      {
+        label: "Ruko",
+        href: "/cari?type=ruko",
+        active: selectedType === "ruko",
+        bgClass: selectedType === "ruko"
+          ? "bg-red-600 text-white font-bold border border-red-600 shadow-sm"
+          : "bg-red-50 hover:bg-red-100 text-red-600/70 border border-red-100/50"
+      }
+    ];
   };
 
   // Local grid data based on filter states
@@ -178,92 +187,106 @@ function CariContent() {
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 tracking-tight leading-tight max-w-3xl mx-auto">
               Temukan Kost, Kontrakan, dan Ruko Terbaik dengan Mudah
             </h1>
-
-            {/* Horizontal Filter Bar */}
-            <form
-              onSubmit={handleSearchSubmit}
-              className="max-w-5xl mx-auto bg-white rounded-2xl sm:rounded-full border border-slate-200 p-3 sm:p-2 shadow-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 items-center mt-6"
-            >
-              {/* Lokasi */}
-              <div className="flex items-center gap-2 px-2.5 border-r border-slate-100 last:border-0">
-                <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
-                <div className="flex-1 text-left">
-                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Lokasi</label>
-                  <input
-                    type="text"
-                    value={locationQuery}
-                    onChange={(e) => setLocationQuery(e.target.value)}
-                    placeholder="Masukkan Lokasi"
-                    className="w-full text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent"
-                  />
+            {/* Floating Search Widget */}
+            <div className="bg-white rounded-3xl shadow-lg shadow-slate-350/30 p-5 border border-slate-100 max-w-5xl mx-auto mt-6">
+              <form
+                onSubmit={handleSearchSubmit}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4 items-center"
+              >
+                {/* Lokasi */}
+                <div className="relative flex items-center gap-3 border border-slate-200 rounded-2xl p-3.5 bg-white hover:border-blue-300 hover:shadow-md transition-all w-full h-[70px] lg:col-span-3">
+                  <MapPin className="w-5 h-5 text-blue-600 shrink-0" />
+                  <div className="flex flex-col text-left w-full pr-6">
+                    <span className="text-[11px] font-bold text-slate-500 tracking-wide leading-none mb-1">Lokasi</span>
+                    <select
+                      value={locationQuery}
+                      onChange={(e) => setLocationQuery(e.target.value)}
+                      className="w-full text-slate-800 text-sm font-semibold bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer appearance-none leading-tight"
+                    >
+                      <option value="">Masukkan Lokasi</option>
+                      <option value="Jakarta">Jakarta</option>
+                      <option value="Bandung">Bandung</option>
+                      <option value="Surabaya">Surabaya</option>
+                      <option value="Yogyakarta">Yogyakarta</option>
+                      <option value="Depok">Depok</option>
+                      <option value="Tangerang">Tangerang</option>
+                    </select>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none" />
                 </div>
-              </div>
 
-              {/* Jenis Properti */}
-              <div className="flex items-center gap-2 px-2.5 border-r border-slate-100 last:border-0">
-                <Home className="w-4 h-4 text-blue-600 shrink-0" />
-                <div className="flex-1 text-left">
-                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Jenis Properti</label>
-                  <select
-                    value={selectedType}
-                    onChange={(e) => setSelectedType(e.target.value as PropertyType)}
-                    className="w-full text-xs font-semibold text-slate-800 bg-transparent focus:outline-none appearance-none cursor-pointer pr-3"
+                {/* Jenis Properti */}
+                <div className="relative flex items-center gap-3 border border-slate-200 rounded-2xl p-3.5 bg-white hover:border-blue-300 hover:shadow-md transition-all w-full h-[70px] lg:col-span-3">
+                  <LayoutGrid className="w-5 h-5 text-blue-600 shrink-0" />
+                  <div className="flex flex-col text-left w-full pr-6">
+                    <span className="text-[11px] font-bold text-slate-500 tracking-wide leading-none mb-1">Jenis Properti</span>
+                    <select
+                      value={selectedType}
+                      onChange={(e) => {
+                        router.push(`/cari?type=${e.target.value}`);
+                      }}
+                      className="w-full text-slate-800 text-sm font-semibold bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer appearance-none leading-tight"
+                    >
+                      <option value="semua">Semua</option>
+                      <option value="kost">Kost</option>
+                      <option value="kontrakan">Kontrakan</option>
+                      <option value="ruko">Ruko</option>
+                    </select>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none" />
+                </div>
+
+                {/* Harga */}
+                <div className="relative flex items-center gap-3 border border-slate-200 rounded-2xl p-3.5 bg-white hover:border-blue-300 hover:shadow-md transition-all w-full h-[70px] lg:col-span-2">
+                  <div className="flex flex-col text-left w-full pr-6">
+                    <span className="text-[11px] font-bold text-slate-500 tracking-wide leading-none mb-1">Harga</span>
+                    <select
+                      value={priceRange}
+                      onChange={(e) => setPriceRange(e.target.value)}
+                      className="w-full text-slate-800 text-sm font-semibold bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer appearance-none leading-tight"
+                    >
+                      <option value="semua">Min - Maks</option>
+                      <option value="under-1m">Di bawah Rp 1 Juta</option>
+                      <option value="1m-2m">Rp 1 - 2 Juta</option>
+                      <option value="2m-3m">Rp 2 - 3 Juta</option>
+                      <option value="3m-5m">Rp 3 - 5 Juta</option>
+                      <option value="over-5m">Di atas Rp 5 Juta</option>
+                    </select>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none" />
+                </div>
+
+                {/* Durasi Sewa */}
+                <div className="relative flex items-center gap-3 border border-slate-200 rounded-2xl p-3.5 bg-white hover:border-blue-300 hover:shadow-md transition-all w-full h-[70px] lg:col-span-2">
+                  <div className="flex flex-col text-left w-full pr-6">
+                    <span className="text-[11px] font-bold text-slate-500 tracking-wide leading-none mb-1">Durasi Sewa</span>
+                    <select
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      className="w-full text-slate-800 text-sm font-semibold bg-transparent border-none outline-none p-0 focus:ring-0 cursor-pointer appearance-none leading-tight"
+                    >
+                      <option value="semua">Semua Durasi</option>
+                      <option value="Bulanan">Bulanan</option>
+                      <option value="3 Bulan">3 Bulan</option>
+                      <option value="6 Bulan">6 Bulan</option>
+                      <option value="Tahunan">Tahunan</option>
+                    </select>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none" />
+                </div>
+
+                {/* Tombol Submit */}
+                <div className="sm:col-span-2 lg:col-span-2">
+                  <button
+                    type="submit"
+                    className="w-full h-[70px] flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-2xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-sm"
                   >
-                    <option value="semua">Semua</option>
-                    <option value="kost">Kost</option>
-                    <option value="kontrakan">Kontrakan</option>
-                    <option value="ruko">Ruko</option>
-                  </select>
+                    <Search className="w-5 h-5 shrink-0" />
+                    <span>Cari Sekarang</span>
+                  </button>
                 </div>
-              </div>
-
-              {/* Harga */}
-              <div className="flex items-center gap-2 px-2.5 border-r border-slate-100 last:border-0">
-                <DollarSign className="w-4 h-4 text-blue-600 shrink-0" />
-                <div className="flex-1 text-left">
-                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Harga</label>
-                  <select
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 bg-transparent focus:outline-none appearance-none cursor-pointer pr-3"
-                  >
-                    <option value="semua">Tentukan Harga</option>
-                    <option value="murah">&lt; Rp 2.000.000</option>
-                    <option value="sedang">Rp 2.000.000 - Rp 5.000.000</option>
-                    <option value="mahal">&gt; Rp 5.000.000</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Durasi Sewa */}
-              <div className="flex items-center gap-2 px-2.5 border-r border-slate-100 last:border-0">
-                <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-                <div className="flex-1 text-left">
-                  <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Durasi Sewa</label>
-                  <select
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    className="w-full text-xs font-semibold text-slate-800 bg-transparent focus:outline-none appearance-none cursor-pointer pr-3"
-                  >
-                    <option value="semua">Semua Durasi</option>
-                    <option value="harian">Harian</option>
-                    <option value="bulanan">Bulanan</option>
-                    <option value="tahunan">Tahunan</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Tombol Submit */}
-              <div className="px-1.5">
-                <button
-                  type="submit"
-                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl sm:rounded-full font-bold text-xs shadow-md shadow-blue-500/10 transition hover:-translate-y-0.5 cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  <span>Cari Sekarang</span>
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </section>
 
@@ -273,16 +296,15 @@ function CariContent() {
             <div className="flex flex-wrap items-center justify-center text-center gap-1 text-[11px] text-slate-500 font-medium">
               {getBreadcrumbs().map((crumb, idx, arr) => (
                 <span key={idx} className="flex items-center gap-1">
-                  {crumb.href ? (
+                  {crumb.href && !crumb.active ? (
                     <Link
                       href={crumb.href}
-                      className="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full transition shadow-sm"
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full transition shadow-sm ${crumb.bgClass}`}
                     >
-                      {idx === 0 && <Home className="w-3 h-3 text-blue-600" />}
                       <span>{crumb.label}</span>
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center bg-blue-600 text-white font-bold px-2 py-0.5 rounded-full shadow-sm">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full shadow-sm ${crumb.bgClass}`}>
                       <span>{crumb.label}</span>
                     </span>
                   )}
