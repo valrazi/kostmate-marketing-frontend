@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Star, Wifi, Wind, Bed, MapPin, ArrowRight, Toilet, Home, Building2 } from "lucide-react";
+import Link from "next/link";
 
 interface Property {
   id: number;
@@ -152,9 +153,9 @@ export default function PropertySection() {
             Temukan berbagai pilihan kost, kontrakan, dan ruko yang banyak diminati.
           </p>
           <div className="mt-4 flex justify-end">
-            <button className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1 cursor-pointer">
+            <Link href="/cari" className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1 cursor-pointer">
               Lihat Semua <ArrowRight className="h-4 w-4" />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -225,9 +226,12 @@ export default function PropertySection() {
                     <span className="text-base font-bold text-blue-600">Rp. {property.price}</span>
                     <span className="text-xs text-slate-500"> /bulan</span>
                   </div>
-                  <button className="w-full py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition cursor-pointer">
+                  <Link
+                    href={`/detail?type=${property.type}`}
+                    className="block w-full text-center py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition cursor-pointer"
+                  >
                     Lihat Detail
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -236,12 +240,12 @@ export default function PropertySection() {
 
         {/* Load More Button */}
         <div className="text-center">
-          <button
-            onClick={() => setVisibleCount(prev => prev + 4)}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition cursor-pointer"
+          <Link
+            href="/cari"
+            className="inline-block px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition cursor-pointer text-sm"
           >
-            Lihat Lebih Lanjut
-          </button>
+            Lihat Lainnya
+          </Link>
         </div>
       </div>
     </section>

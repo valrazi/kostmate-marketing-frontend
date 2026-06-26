@@ -50,7 +50,7 @@ export default function Hero() {
                 {/* Cari Properti */}
                 <a
                   href="#properties"
-                  className="flex items-center justify-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5"
+                  className="flex items-center justify-center gap-2 px-3 py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-md transition-all duration-200 hover:-translate-y-0.5"
                 >
                   <Search size={14} />
                   Cari Properti
@@ -59,7 +59,7 @@ export default function Hero() {
                 {/* Pasang Properti */}
                 <a
                   href="#pasang-properti"
-                  className="flex items-center justify-center gap-2 px-3 py-2 bg-white border border-slate-200 hover:border-brand-500 text-slate-700 hover:text-brand-600 text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5"
+                  className="flex items-center justify-center gap-2 px-3 py-3 bg-white border border-slate-200 hover:border-brand-500 text-slate-700 hover:text-brand-600 text-xs font-semibold rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5"
                 >
                   <Building2 size={14} />
                   Pasang Properti
@@ -129,7 +129,7 @@ export default function Hero() {
 
       {/* Floating Search Widget */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 -mt-16">
-        <div className="bg-white rounded-3xl shadow-2xl shadow-slate-300/50 p-5 md:p-6 border border-slate-100 max-w-5xl mx-auto">
+        <div className="bg-white rounded-3xl shadow-md shadow-slate-300/50 p-5 md:p-6 border border-slate-100 max-w-5xl mx-auto">
           <form
             onSubmit={handleSearch}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 md:gap-4 items-center"

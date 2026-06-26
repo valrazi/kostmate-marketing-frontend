@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import logoKostMate from "@/images/logo-kostmate.png";
 import {
   Menu,
@@ -19,11 +20,14 @@ import {
 } from "lucide-react";
 
 export default function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [active, setActive] = useState("#beranda");
+  const [active, setActive] = useState(pathname === "/cari" ? "#properties" : "#beranda");
   const [language, setLanguage] = useState("ID");
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isCariOpen, setIsCariOpen] = useState(false);
+  const [isMobileCariOpen, setIsMobileCariOpen] = useState(false);
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-gray-100 bg-blue-50/90 backdrop-blur-md">
@@ -45,17 +49,26 @@ export default function Header() {
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-1 px-3 py-3 bg-white rounded-2xl shadow-lg">
             {/* Beranda */}
-            <a
-              href="#beranda"
-              onClick={() => setActive("#beranda")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                active === "#beranda"
-                  ? "bg-blue-600 text-white"
-                  : "text-blue-600 hover:bg-blue-50"
-              }`}
-            >
-              Beranda
-            </a>
+            {pathname === "/" ? (
+              <a
+                href="#beranda"
+                onClick={() => setActive("#beranda")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                  active === "#beranda"
+                    ? "bg-blue-600 text-white"
+                    : "text-blue-600 hover:bg-blue-50"
+                }`}
+              >
+                Beranda
+              </a>
+            ) : (
+              <Link
+                href="/"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-blue-600 hover:bg-blue-50"
+              >
+                Beranda
+              </Link>
+            )}
 
             {/* Dropdown Cari apa? */}
             <div className="relative">
@@ -65,7 +78,7 @@ export default function Header() {
                   setIsLangOpen(false);
                 }}
                 className={`flex items-center gap-0.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                  active.startsWith("#properties")
+                  pathname === "/cari" || pathname === "/detail" || active.startsWith("#properties")
                     ? "bg-blue-600 text-white"
                     : "text-blue-600 hover:bg-blue-50"
                 }`}
@@ -76,8 +89,8 @@ export default function Header() {
 
               {isCariOpen && (
                 <div className="absolute left-0 mt-1.5 w-40 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-50">
-                  <a
-                    href="#properties"
+                  <Link
+                    href="/cari?type=kost"
                     onClick={() => {
                       setActive("#properties-kost");
                       setIsCariOpen(false);
@@ -85,9 +98,9 @@ export default function Header() {
                     className="block px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                   >
                     Kost
-                  </a>
-                  <a
-                    href="#properties"
+                  </Link>
+                  <Link
+                    href="/cari?type=kontrakan"
                     onClick={() => {
                       setActive("#properties-kontrakan");
                       setIsCariOpen(false);
@@ -95,9 +108,9 @@ export default function Header() {
                     className="block px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                   >
                     Kontrakan
-                  </a>
-                  <a
-                    href="#properties"
+                  </Link>
+                  <Link
+                    href="/cari?type=ruko"
                     onClick={() => {
                       setActive("#properties-ruko");
                       setIsCariOpen(false);
@@ -105,36 +118,34 @@ export default function Header() {
                     className="block px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                   >
                     Ruko
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
 
             {/* Pusat Bantuan */}
-            <a
-              href="#faq"
-              onClick={() => setActive("#faq")}
+            <Link
+              href="/pusat-bantuan"
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                active === "#faq"
+                pathname === "/pusat-bantuan"
                   ? "bg-blue-600 text-white"
                   : "text-blue-600 hover:bg-blue-50"
               }`}
             >
               Pusat Bantuan
-            </a>
+            </Link>
 
             {/* Syarat & Ketentuan */}
-            <a
-              href="#footer"
-              onClick={() => setActive("#syarat")}
+            <Link
+              href="/syarat-ketentuan"
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                active === "#syarat"
+                pathname === "/syarat-ketentuan"
                   ? "bg-blue-600 text-white"
                   : "text-blue-600 hover:bg-blue-50"
               }`}
             >
               Syarat & Ketentuan
-            </a>
+            </Link>
           </div>
 
           {/* Right Section */}
@@ -234,100 +245,139 @@ export default function Header() {
                 </p>
 
                 {/* Beranda */}
-                <a
-                  href="#beranda"
-                  onClick={() => {
-                    setActive("#beranda");
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                    active === "#beranda"
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    active === "#beranda" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
-                  }`}>
-                    <Home className="w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-semibold flex-1">Beranda</span>
-                  {active === "#beranda" && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
-                  )}
-                </a>
+                {pathname === "/" ? (
+                  <a
+                    href="#beranda"
+                    onClick={() => {
+                      setActive("#beranda");
+                      setIsOpen(false);
+                    }}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                      active === "#beranda"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      active === "#beranda" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
+                    }`}>
+                      <Home className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold flex-1">Beranda</span>
+                    {active === "#beranda" && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
+                    )}
+                  </a>
+                ) : (
+                  <Link
+                    href="/"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group text-slate-700 hover:bg-slate-100"
+                  >
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 group-hover:bg-white">
+                      <Home className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold flex-1">Beranda</span>
+                  </Link>
+                )}
 
                 {/* Cari Properti */}
-                <a
-                  href="#properties"
-                  onClick={() => {
-                    setActive("#properties");
-                    setIsOpen(false);
-                  }}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                    active.startsWith("#properties")
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                      : "text-slate-700 hover:bg-slate-100"
-                  }`}
-                >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    active.startsWith("#properties") ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
-                  }`}>
-                    <Search className="w-4 h-4" />
+                {/* Cari apa? Collapsible Dropdown */}
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => setIsMobileCariOpen(!isMobileCariOpen)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group text-left w-full cursor-pointer ${
+                      pathname === "/cari" || pathname === "/detail"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                        : "text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                      pathname === "/cari" || pathname === "/detail" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
+                    }`}>
+                      <Search className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-semibold flex-1">Cari apa?</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMobileCariOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  <div className={`overflow-hidden transition-all duration-300 ${isMobileCariOpen ? "max-h-48 mt-1" : "max-h-0"}`}>
+                    <div className="pl-14 pr-4 py-1.5 flex flex-col gap-2.5 border-l border-slate-200 ml-7">
+                      <Link
+                        href="/cari?type=kost"
+                        onClick={() => {
+                          setActive("#properties-kost");
+                          setIsOpen(false);
+                        }}
+                        className="text-xs font-bold text-slate-600 hover:text-blue-600 transition py-0.5"
+                      >
+                        Kost
+                      </Link>
+                      <Link
+                        href="/cari?type=kontrakan"
+                        onClick={() => {
+                          setActive("#properties-kontrakan");
+                          setIsOpen(false);
+                        }}
+                        className="text-xs font-bold text-slate-600 hover:text-blue-600 transition py-0.5"
+                      >
+                        Kontrakan
+                      </Link>
+                      <Link
+                        href="/cari?type=ruko"
+                        onClick={() => {
+                          setActive("#properties-ruko");
+                          setIsOpen(false);
+                        }}
+                        className="text-xs font-bold text-slate-600 hover:text-blue-600 transition py-0.5"
+                      >
+                        Ruko
+                      </Link>
+                    </div>
                   </div>
-                  <span className="text-sm font-semibold flex-1">Cari Properti</span>
-                  {active.startsWith("#properties") && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
-                  )}
-                </a>
+                </div>
 
                 {/* Pusat Bantuan */}
-                <a
-                  href="#faq"
-                  onClick={() => {
-                    setActive("#faq");
-                    setIsOpen(false);
-                  }}
+                <Link
+                  href="/pusat-bantuan"
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                    active === "#faq"
+                    pathname === "/pusat-bantuan"
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "text-slate-700 hover:bg-slate-100"
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    active === "#faq" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
+                    pathname === "/pusat-bantuan" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
                   }`}>
                     <HelpCircle className="w-4 h-4" />
                   </div>
                   <span className="text-sm font-semibold flex-1">Pusat Bantuan</span>
-                  {active === "#faq" && (
+                  {pathname === "/pusat-bantuan" && (
                     <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                   )}
-                </a>
+                </Link>
 
                 {/* Syarat & Ketentuan */}
-                <a
-                  href="#footer"
-                  onClick={() => {
-                    setActive("#syarat");
-                    setIsOpen(false);
-                  }}
+                <Link
+                  href="/syarat-ketentuan"
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                    active === "#syarat"
+                    pathname === "/syarat-ketentuan"
                       ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                       : "text-slate-700 hover:bg-slate-100"
                   }`}
                 >
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                    active === "#syarat" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
+                    pathname === "/syarat-ketentuan" ? "bg-white/20" : "bg-slate-100 group-hover:bg-white"
                   }`}>
                     <FileText className="w-4 h-4" />
                   </div>
                   <span className="text-sm font-semibold flex-1">Syarat & Ketentuan</span>
-                  {active === "#syarat" && (
+                  {pathname === "/syarat-ketentuan" && (
                     <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                   )}
-                </a>
+                </Link>
               </div>
 
               {/* Language Section - Segmented Control */}

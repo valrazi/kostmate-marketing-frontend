@@ -76,7 +76,7 @@ export default function Footer() {
                 { label: "Pusat Bantuan", href: "#bantuan" },
                 { label: "FAQ", href: "#faq" },
                 { label: "Kebijakan Privasi", href: "#privasi" },
-                { label: "Syarat & Ketentuan", href: "#syarat" },
+                { label: "Syarat & Ketentuan", href: "/syarat-ketentuan" },
               ].map((item) => (
                 <li key={item.label}>
                   <Link
@@ -150,7 +150,7 @@ export default function Footer() {
               Privasi
             </Link>
             <span className="text-slate-300">|</span>
-            <Link href="#syarat" className="text-slate-600 hover:text-blue-600 transition-colors">
+            <Link href="/syarat-ketentuan" className="text-slate-600 hover:text-blue-600 transition-colors">
               Syarat & Ketentuan
             </Link>
           </div>
